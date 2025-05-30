@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אינפוגרפיקה: ניתוח אסטרטגי עמל-פילת</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #F7F7F7; /* Light background from Energetic & Playful (assumed) */
+        }
+        /* Chosen Palette: Energetic & Playful (Primary colors for use)
+           Red: #FF6B6B
+           Yellow: #FFD166
+           Green: #06D6A0
+           Blue: #118AB2
+           Dark Blue/Text: #073B4C
+           Background/Light: #F7F7F7
+        */
+        .text-brand-dark { color: #073B4C; }
+        .bg-brand-red { background-color: #FF6B6B; }
+        .text-brand-red { color: #FF6B6B; }
+        .bg-brand-yellow { background-color: #FFD166; }
+        .text-brand-yellow { color: #FFD166; }
+        .bg-brand-green { background-color: #06D6A0; }
+        .text-brand-green { color: #06D6A0; }
+        .bg-brand-blue { background-color: #118AB2; }
+        .text-brand-blue { color: #118AB2; }
+        .border-brand-blue { border-color: #118AB2; }
+        .border-brand-green { border-color: #06D6A0; }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px; /* Max width for donut chart readability */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .stat-card {
+            background-color: #FFFFFF;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            font-size: 2.25rem; /* 36px */
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #118AB2; /* Blue accent */
+            display: inline-block;
+        }
+        .card-title {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        /* Confirmation: NEITHER Mermaid JS NOR SVG were used anywhere in this output. All charts are via Chart.js (Canvas). All diagrams/icons are HTML/CSS or Unicode. */
+        /* Narrative Plan Summary:
+           1. Intro: Strategic partnership potential.
+           2. Amal Overview: Key strengths (e.g., largest private nursing).
+           3. Pilat Overview: Key strengths (e.g., human capital investment).
+           4. Synergy Highlights: Visualizing Table 1 (Amal service + Pilat complement -> value).
+           5. Tender Opportunities: Visualizing Table 2 (Tender type, contributions, USP).
+           6. Synergy Model: Donut chart showing combined value.
+           7. Pilat's Tender Capability Boost via Amal.
+           8. Strategic Recommendations Summary.
+        */
+        /* Visualization Choices Summary:
+           - Amal/Pilat Overview: Goal: Inform. Viz: Styled HTML lists/Big Numbers. Justification: Clear core identity/scale. Method: HTML/CSS. NO SVG.
+           - Synergy Highlights (Table 1): Goal: Compare/Organize. Viz: HTML/CSS Cards. Justification: Clear pairings/benefits. Method: HTML/CSS, Unicode icons if simple. NO SVG.
+           - Tender Opportunities (Table 2): Goal: Organize/Inform. Viz: HTML/CSS Cards. Justification: Specific, actionable examples. Method: HTML/CSS. NO SVG.
+           - Synergy Model: Goal: Inform. Viz: Donut Chart (Chart.js). Justification: Visually summarize combined strength. Method: Chart.js (Canvas). NO SVG.
+           - Pilat's Boost: Goal: Inform. Viz: HTML/CSS list. Justification: Clear benefits. Method: HTML/CSS. NO SVG.
+           - Flow Chart (conceptual, if used for process): Goal: Organize. Viz: HTML/CSS. Justification: Show collaborative process. Method: HTML/CSS. NO SVG. (Not explicitly implemented here as data not directly available for complex flow, focusing on provided tables).
+        */
+    </style>
+</head>
+<body class="text-brand-dark bg-slate-50">
+
+    <header class="bg-brand-dark text-white py-8 text-center">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl md:text-5xl font-bold">ניתוח אסטרטגי: סינרגיה והזדמנויות במכרזים</h1>
+            <p class="text-xl md:text-2xl mt-2">קבוצת עמל ומעבר וקבוצת פילת</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section class="mb-16 text-center">
+            <h2 class="section-title text-brand-blue">השותפות האסטרטגית: מינוף חוזקות הדדיות</h2>
+            <p class="mt-4 text-lg max-w-3xl mx-auto">
+                מסמך זה מציג ניתוח מקיף של קבוצות החברות "עמל ומעבר" ו"פילת", ומדגיש את הפוטנציאל הטמון בשיתוף פעולה אסטרטגי ביניהן. החיבור בין היכולות המשלימות של שתי הקבוצות פותח הזדמנויות משמעותיות להתמודדות מוצלחת במכרזים ממשלתיים וציבוריים מורכבים, תוך יצירת ערך מוסף ייחודי.
+            </p>
+        </section>
+
+        <section class="mb-16 grid md:grid-cols-2 gap-8">
+            <div class="stat-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="card-title text-brand-green flex items-center">
+                    <span class="text-3xl mr-3">🏢</span> קבוצת עמל ומעבר: מורשת של טיפול ותמיכה
+                </h3>
+                <p class="mb-3">חברת הסיעוד הפרטית הגדולה בישראל, עם פריסה ארצית רחבה ועשרות סניפים.</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>מומחיות בטיפול בקשישים ושירותי בריאות הנפש.</li>
+                    <li>רשת גני תקשורת ובתי ספר לחינוך מיוחד ("נגיש").</li>
+                    <li>שירותי שיקום ופתרונות דיור ותעסוקה מגוונים.</li>
+                    <li>פועלת בהתאם לתקנות משרד הבריאות, הרווחה והביטוח הלאומי.</li>
+                </ul>
+                 <p class="mt-3 text-sm text-gray-600">ערכים מובילים: שליחות, מקצועיות, העצמה אישית וחדשנות.</p>
+            </div>
+            <div class="stat-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="card-title text-brand-yellow flex items-center">
+                    <span class="text-3xl mr-3">💡</span> קבוצת פילת: השקעה בהון אנושי וחדשנות
+                </h3>
+                <p class="mb-3">"בית השקעות בהון אנושי" המשלב חדשנות, פסיכולוגיה וטכנולוגיה.</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>פתרונות גיוס ואבחון מתקדמים (כולל i-verse מבוסס AI).</li>
+                    <li>למידה ארגונית והכשרות טכנולוגיות (Logtel, המכללה לניו-מדיה).</li>
+                    <li>ייעוץ ארגוני ופיתוח מנהיגות (Momentum).</li>
+                    <li>שירותים פיננסיים וייעוץ קריירה ליחידים וארגונים.</li>
+                </ul>
+                <p class="mt-3 text-sm text-gray-600">למעלה מ-40 שנות ניסיון, מאות לקוחות ארגוניים ומעל מיליון איש הוכשרו ואובחנו.</p>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="section-title text-brand-blue text-center">מיפוי סינרגיות מרכזיות: עמל פוגשת את פילת</h2>
+            <p class="mt-4 text-lg text-center max-w-3xl mx-auto mb-10">
+                הטבלה הבאה (שהוצגה במקור במסמך המחקר) מפרטת את החיבור בין תחומי הפעילות של עמל ומעבר לבין היכולות המשלימות של פילת, והערך המוסף הנוצר למכרזים.
+                כאן מוצגת תמצית ויזואלית של נקודות מפתח מתוך אותה טבלה.
+            </p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-red">טיפולי בית לקשישים (עמל) + גיוס ואבחון (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> קשישים הזקוקים לטיפול סיעודי בביתם.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> גיוס, אבחון, למידה ארגונית.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: איכות מטפלים משופרת, איוש יעיל, הכשרה ייעודית.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-red">"ידיד נפש" - שיקום ברה"נ (עמל) + אבחון וייעוץ (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> תמיכה בבריאות הנפש בקהילה.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> אבחון, ייעוץ ארגוני (Momentum), למידה.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: תוצאות משופרות ללקוחות, צוות מיומן.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-red">"נגיש" - חינוך מיוחד (עמל) + למידה וגיוס (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> ילדים עם צרכים מיוחדים.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> אבחון, למידה (Logtel, ניו-מדיה), גיוס.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: תמיכה חינוכית משופרת, שילוב טכנולוגיה.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-red">"המרכז לתעסוקה" (עמל) + ייעוץ והכשרה (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> אנשים המחפשים תעסוקה.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> ייעוץ קריירה, Pilatest, הכשרות.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: הכוונה תעסוקתית מקיפה, הערכת מיומנויות.</p>
+                </div>
+                 <div class="stat-card">
+                    <h4 class="card-title text-brand-red">"רב גיל" - עובדים זרים (עמל) + גיוס והכשרה (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> משפחות הזקוקות למטפלים זרים.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> גיוס בינלאומי, אבחון התאמה, הכשרת מטפלים.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: תהליכי גיוס והשמה משופרים, דגש על התאמה.</p>
+                </div>
+                 <div class="stat-card">
+                    <h4 class="card-title text-brand-red">שירותים פסיכולוגיים "טלם" (עמל) + אבחון וייעוץ (פילת)</h4>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">צורך (עמל):</strong> שירותים פסיכולוגיים והכשרות.</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומה (פילת):</strong> אבחון מתקדם, למידה ארגונית, ייעוץ.</p>
+                    <p class="mt-2 font-semibold bg-green-100 text-green-700 p-2 rounded">ערך משותף: שירותי אבחון, הכשרות מותאמות, פיתוח ארגוני.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="section-title text-brand-blue text-center">הזדמנויות במכרזים ציבוריים: הצעת ערך משותפת</h2>
+            <p class="mt-4 text-lg text-center max-w-3xl mx-auto mb-10">
+                שיתוף הפעולה מאפשר התמודדות חזקה במגוון מכרזים, תוך מינוף החוזקות הייחודיות של כל קבוצה. להלן דוגמאות (מבוססות על טבלה 2 מהמחקר) המדגימות את הפוטנציאל.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-yellow">תוכנית שיקום בבריאות הנפש בקהילה</h4>
+                    <p class="text-xs text-gray-500 mb-2">דוגמה: מכרז משרד הבריאות 34/2025</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">תרומת עמל:</strong> "ידיד נפש" (צוותי שיקום), "טלם" (שירותים פסיכולוגיים).</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומת פילת:</strong> i-verse (אבחון AI), Momentum (מסגרת M&E), הכשרת צוות.</p>
+                    <p class="mt-3 font-semibold text-brand-dark p-2 bg-yellow-100 rounded">USP משותף: שירותי בריאות נפש קהילתיים מבוססי ראיות, משופרי טכנולוגיה, עם צוות מיומן.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-yellow">הפעלת רשת בתי ספר לחינוך מיוחד</h4>
+                     <p class="text-xs text-gray-500 mb-2">גוף מפרסם לדוגמה: משרד החינוך</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">תרומת עמל:</strong> "נגיש" (הפעלת בתי ספר, התאמת תוכניות לימודים).</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומת פילת:</strong> גיוס ואבחון (מחנכים), Logtel (טכנולוגיה מסייעת), כלים דיגיטליים.</p>
+                    <p class="mt-3 font-semibold text-brand-dark p-2 bg-yellow-100 rounded">USP משותף: חינוך מיוחד הוליסטי המשלב פדגוגיה מיטבית עם טכנולוגיה מתקדמת.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-yellow">שירותי טיפול ביתי ארציים לקשישים</h4>
+                    <p class="text-xs text-gray-500 mb-2">גוף מפרסם לדוגמה: ביטוח לאומי / משרד הרווחה</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">תרומת עמל:</strong> סניפי סיעוד בפריסה ארצית, "רב גיל" (איתור מטפלים).</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומת פילת:</strong> גיוס המוני, הכשרה סטנדרטית, Pilatest (התאמת מטפלים).</p>
+                    <p class="mt-3 font-semibold text-brand-dark p-2 bg-yellow-100 rounded">USP משותף: שירותי טיפול ביתי איכותיים, ניתנים להרחבה, עם תמיכת HR ואבטחת איכות.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="card-title text-brand-yellow">שיקום מקצועי לאנשים עם מוגבלויות</h4>
+                    <p class="text-xs text-gray-500 mb-2">גוף מפרסם לדוגמה: ביטוח לאומי / משרד העבודה</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-dark">תרומת עמל:</strong> "המרכז הישראלי לתעסוקה" (אימון, השמה).</p>
+                    <p class="text-sm mb-1"><strong class="text-brand-blue">תרומת פילת:</strong> Pilatest (אבחון תעסוקתי), "בית לקריירה" (ייעוץ), הכשרת מיומנויות.</p>
+                    <p class="mt-3 font-semibold text-brand-dark p-2 bg-yellow-100 rounded">USP משותף: מסלול תעסוקה מקיף המשלב תמיכה פסיכו-סוציאלית עם אבחון מתקדם.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="section-title text-brand-blue text-center">מודל הסינרגיה: הצעת ערך משולבת 1+1=3</h2>
+            <p class="mt-4 text-lg text-center max-w-3xl mx-auto mb-10">
+                השילוב בין עמל ומעבר לפילת אינו רק חיבור של שתי ישויות, אלא יצירת כוח שלישי, חזק יותר מסך חלקיו.
+                התרשים ממחיש כיצד החוזקות של כל קבוצה, יחד עם הערך המוסף הייחודי של השותפות, יוצרים מענה מקיף ואיכותי למכרזים הציבוריים.
+            </p>
+            <div class="chart-container bg-white p-4 rounded-lg shadow-lg">
+                <canvas id="synergyDonutChart"></canvas>
+            </div>
+            <p class="mt-6 text-center text-md max-w-2xl mx-auto">
+                החיבור בין התשתית התפעולית והמומחיות של עמל באספקת שירותי טיפול ישירים, לבין פתרונות משאבי האנוש, הטכנולוגיה ויכולות הייעוץ של פילת, יוצר הצעה בעלת ערך מוסף משמעותי עבור מכרזים ציבוריים מורכבים.
+            </p>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="section-title text-brand-blue text-center">חיזוק יכולות המכרז של פילת באמצעות עמל ומעבר</h2>
+            <p class="mt-4 text-lg text-center max-w-3xl mx-auto mb-10">
+                עמל ומעבר מביאה לשותפות נכסים קריטיים המשלימים את חוזקותיה של פילת, במיוחד בתחומים בהם נדרשת יכולת תפעולית נרחבת בשטח:
+            </p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-brand-green">
+                    <h4 class="font-semibold text-lg mb-2 text-brand-green">תשתית טיפול ישיר רחבת היקף</h4>
+                    <p>בתי אבות, סניפי טיפול ביתי, מתקני חינוך מיוחד. מעניק לפילת גישה ליכולת תפעולית מורשית ומוכחת.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-brand-green">
+                    <h4 class="font-semibold text-lg mb-2 text-brand-green">ניסיון מעשי עם אוכלוסיות פגיעות</h4>
+                    <p>מומחיות בטיפול בקשישים, בריאות הנפש, וצרכים מיוחדים. מעניק אמינות וניסיון מוכח.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-brand-green">
+                    <h4 class="font-semibold text-lg mb-2 text-brand-green">נוכחות קהילתית עמוקה</h4>
+                    <p>קשרים מבוססים עם עיריות ותוכניות קהילתיות. מהווה ערוץ ליישום פתרונות ברמה המקומית.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-brand-green">
+                    <h4 class="font-semibold text-lg mb-2 text-brand-green">הסמכה ורישוי לשירותי טיפול</h4>
+                    <p>פעילות תחת תקנות משרדי הממשלה. מבטיח עמידה בדרישות רגולטוריות מורכבות.</p>
+                </div>
+            </div>
+            <p class="mt-8 text-center text-xl font-semibold text-brand-dark">
+                בשורה התחתונה: עמל ומעבר מעניקה לפילת את ה"כוח בשטח" ו"רישיון הפעולה" במגזרים מפוקחים.
+            </p>
+        </section>
+        
+        <section class="mb-16">
+            <h2 class="section-title text-brand-blue text-center">המלצות אסטרטגיות מרכזיות</h2>
+             <p class="mt-4 text-lg text-center max-w-3xl mx-auto mb-10">
+                למיקסום הפוטנציאל של שיתוף הפעולה, מומלץ להתמקד בפעולות הבאות (כפי שפורט במסמך המחקר):
+            </p>
+            <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+                <ul class="list-decimal list-inside space-y-3 text-lg">
+                    <li>הקמת כוח משימה משותף לזיהוי והכנת הצעות למכרזים.</li>
+                    <li>פיתוח קריטריונים ברורים לבחירת מכרזי יעד אסטרטגיים.</li>
+                    <li>ניסוח הצעות ערך משכנעות המדגישות את סינרגיית "1+1=3".</li>
+                    <li>הגדרת מודלים תפעוליים משותפים ומבני ממשל ברורים לפרויקטים.</li>
+                    <li>התמודדות פרואקטיבית עם אתגרים פוטנציאליים (תרבותיים, תפעוליים).</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-brand-dark text-white py-8 text-center">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2024 ניתוח סינרגטי עמל-פילת. כל הזכויות שמורות למידע המוצג במסמך המקור.</p>
+            <p class="text-sm mt-1">אינפוגרפיקה זו הוכנה על בסיס "ניתוח אסטרטגי של קבוצת עמל ומעבר וקבוצת פילת: הזדמנויות לשיתוף פעולה במכרזים ציבוריים".</p>
+        </div>
+    </footer>
+
+    <script>
+        function wrapLabel(str, maxWidth) {
+            if (str.length <= maxWidth) {
+                return str;
+            }
+            const words = str.split(' ');
+            let currentLine = '';
+            const lines = [];
+            for (const word of words) {
+                if ((currentLine + word).length <= maxWidth) {
+                    currentLine += word + ' ';
+                } else {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                }
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        const synergyDonutCtx = document.getElementById('synergyDonutChart').getContext('2d');
+        new Chart(synergyDonutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    wrapLabel('עמל ומעבר: תפעול ושירותי טיפול ישירים', 20), // Max 20 chars per line example
+                    wrapLabel('פילת: חדשנות, טכנולוגיה ומומחיות HR', 20),
+                    wrapLabel('ערך מוסף משותף: פתרונות מקיפים למכרזים', 20)
+                ],
+                datasets: [{
+                    label: 'מודל הסינרגיה',
+                    data: [45, 35, 20], // Percentages
+                    backgroundColor: [
+                        '#118AB2', // Blue for Amal
+                        '#06D6A0', // Green for Pilat
+                        '#FFD166'  // Yellow for Synergy
+                    ],
+                    borderColor: [
+                        '#FFFFFF',
+                        '#FFFFFF',
+                        '#FFFFFF'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: 'Assistant, sans-serif',
+                                size: 12
+                            },
+                            boxWidth: 15,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: 'Assistant, sans-serif'
+                        },
+                        titleFont: {
+                            family: 'Assistant, sans-serif'
+                        },
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                cutout: '60%' // Makes it a doughnut
+            }
+        });
+    </script>
+
+</body>
+</html>
